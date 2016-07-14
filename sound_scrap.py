@@ -53,6 +53,11 @@ def datalinks_species(url):
     return downloadlinks
 
 if __name__ == '__main__':
-    cat_url = 'http://www.tierstimmenarchiv.de/webinterface/contents/querytext.php?mode=clearresults&querytext_1=Felis%20silvestris%20f.%20domestica&queryfield_1=species&querytype_1=matches&fields=1&startvalue=1'
-    with open( "catlinks.pkl", "w" ) as f:
-        pickle.dump(downloadlinks, f)
+    urldict = {'cat':'http://www.tierstimmenarchiv.de/webinterface/contents/querytext.php?mode=clearresults&querytext_1=Felis%20silvestris%20f.%20domestica&queryfield_1=species&querytype_1=matches&fields=1&startvalue=1',
+    'dog':'http://www.tierstimmenarchiv.de/webinterface/contents/querytext.php?querytext_2=Canis+lupus+f.+familiaris&sel_2=Haushund&sel_3=Domestic+dog&queryfield_2=species&querytype_2=matches&querytext_1=&queryfield_1=description&querytype_1=contains&fields=2&startvalue=1&mode=query'}
+    # cat_downloadlinks = datalinks_species(cat_url)
+    # with open( "catlinks.pkl", "w" ) as f:
+    #     pickle.dump(cat_downloadlinks, f)
+    dog_downloadlinks = datalinks_species(urldict['dog'])
+    with open( "doglinks.pkl", "w" ) as f:
+         pickle.dump(dog_downloadlinks, f)
