@@ -18,15 +18,20 @@ http://soundbible.com/tags-dog-bark.html
 [domestic cat](http://www.tierstimmenarchiv.de/webinterface/contents/querytext.php?mode=clearresults&querytext_1=Felis%20silvestris%20f.%20domestica&queryfield_1=species&querytype_1=matches&fields=1&startvalue=1)
 
 [youtube sources]
+https://www.youtube.com/watch?v=P9AY5rc5M28
+https://www.youtube.com/watch?v=ljYzRXlPEUo
 
 http://www.soundsnap.com/tags/barking (pay needed to download)
 [German animal sound repo](http://www.tierstimmenarchiv.de/webinterface/contents/treebrowser.php)
-https://www.freesound.org/search/?q=cat+
+
+[Free sound database](https://www.freesound.org)
+libphy yahoo qp
 
 [youtube downloader code](https://github.com/nficano/pytube)
 [animal sound classification thesis](https://www.ims.tuwien.ac.at/publications/tr-1882-038.pdf)
-result: MFCC performs the best. first 7 MFCC suffice to have 70+% recall and precision for cats, dogs, birds, and cows classification. each category had <100 data.
-
+result: MFCC performs the best. first 7 MFCC suffice to have 70+% recall and precision for cats, dogs, birds, and cows classification. each category had <100 data. analysis done in knn, svm, etc, but not neural network.
+[speech recog using cnn]
+result: use the log-energy computed directly from the mel-frequency spectral coefficients (there is a problem with using mfcc)
 
 [VGG19](https://gist.github.com/baraldilorenzo/8d096f48a1be4a2d660d)
 previous cohort repo
