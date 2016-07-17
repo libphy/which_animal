@@ -19,6 +19,7 @@
 ## Previous students project repos (image recognition)
 [ChefNet](https://github.com/Mikelew88/ChefNet)  by Mike Lewis  
 [Nikki ]
+[Accent]https://github.com/dwww2012/Accent-Classifier
 
 ## Animal sounds data sources
 
@@ -53,10 +54,13 @@ Take-away: use the log-energy computed directly from the mel-frequency spectral 
 [Audio-Visual Speech Recognition using SciPy](http://conference.scipy.org/proceedings/scipy2010/pdfs/reikeras.pdf)  
 shows how to use scipy tools for mfcc  
 
-#### SR wiki
+#### Articles
 [MFCC](http://recognize-speech.com/feature-extraction/mfcc#[object%20HTMLHeadingElement])    
 [CNN for speech recognition](http://recognize-speech.com/acoustic-model/knn/comparing-different-architectures/convolutional-neural-networks-cnns#[object%20HTMLHeadingElement])    
 [DSP](http://greenteapress.com/thinkdsp/html/index.html)  
 
 #### Tools
 [DSP python tools](https://github.com/AllenDowney/ThinkDSP)
+[python_speech_features](https://github.com/jameslyons/python_speech_features)
+[scikits talkbox- mfcc](https://github.com/cournape/talkbox/blob/master/scikits/talkbox/features/mfcc.py)
+[librosa](https://github.com/librosa/librosa) :  can calculate mfcc, delta, delta2
