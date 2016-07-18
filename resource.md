@@ -64,3 +64,4 @@ shows how to use scipy tools for mfcc
 [python_speech_features](https://github.com/jameslyons/python_speech_features)
 [scikits talkbox- mfcc](https://github.com/cournape/talkbox/blob/master/scikits/talkbox/features/mfcc.py)
 [librosa](https://github.com/librosa/librosa) :  can calculate mfcc, delta, delta2
+[Hmm.. another tool? (even has regression tools)](http://journals.plos.org/plosone/article/asset?id=10.1371/journal.pone.0144610.PDF)
