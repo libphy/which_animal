@@ -38,3 +38,23 @@ To do:
 write a script that detects peaks and slices sound data around that peak
 modify scraping german site such that it scrapes tags (meow, purr, hiss, etc)
 Scrape more data -> freesound.org
+
+peak detection function done
+
+7/18/2016
+scraping script for freesound.org using selenium.
+inspected cat meow sounds, created block words list.
+wrote a script that scrape only relevant download links (filters out cat sounds other than meow, noise and irrelevant tags).
+
+7/19/2016
+inspected further sound data and tweaked filters.
+downloaded cat meow files (resulted in 69 selected files list out of 398 listings).
+wrote a script that renames the audio files and converts from arbitrary audio file format to .wav format.
+
+To do:
+inspect sound files- duration, sampling rate etc
+modify scraping script for german animal sound repo (tierstimmen) to filter certain tags -> get cat meow filtered files -> consolidate all cat meows
+write a script that slices a long sound files to multiple ones (using peak detection) and makes a short one padded  
+
+scrape dog barking sound data from freesound.org, need to create block words for dog sound
+scrape bird sound data
