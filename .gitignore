@@ -1,0 +1,8 @@
+#OS junk files
+.DS_Store
+
+#foders
+data/
+code/test/
+
+.ipynb_checkpoints
