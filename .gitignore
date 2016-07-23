@@ -3,10 +3,12 @@
 
 #foders
 data/
-code/test/
+pickles/
+IPYNB/
 .ipynb_checkpoints
-code/.ipynb_checkpoints
+code/EDA_DataCleaning/.ipynb_checkpoints
 temp
+etc/progress.md
 
 #files
 *.pyc
