@@ -5,6 +5,7 @@
 data/
 code/test/
 .ipynb_checkpoints
+temp
 
 #files
 *.pyc
