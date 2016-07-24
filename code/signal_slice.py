@@ -101,13 +101,3 @@ def runslice(path2dfpkl,path2files):
         df = pickle.load(f)
     df['active_region'], df['sr'], df['duration'] = post2df(path2files)
     return df
-
-if __name__ =='__main__':
-    directorypkl='/home/geena/projects/which_animal/data/scrape/tierstimmen'
-    directoryfiles = '/home/geena/projects/which_animal/data/scrape/tierstimmen/dog/standard/dog_selected'
-    with open(directorypkl+'/dog_anno.pkl') as f:
-        dogdf = pickle.load(f)
-    fileslist = map(lambda x: directoryfiles+'/'+x+'_short.wav',dogdf['filename'])
-    dogdf = runslice(directorypkl+'/dog_anno.pkl',fileslist)
-    with open(directorypkl+'/dog_slice.pkl','w') as f:
-        pickle.dump(dogdf,f)

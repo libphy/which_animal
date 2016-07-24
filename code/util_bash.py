@@ -31,3 +31,14 @@ def movefiles(directory,filename,sub): #move any file to a specified subdirector
     command = 'mv '+directory+'/'+filename+' '+directory+'/'+sub+'/'+filename
     print command
     subprocess.check_output(['bash','-c', command])
+
+def rename(directory,tag): #rename audio files and save the name change log as pickle
+    fileslist = os.listdir(directory)
+    newfileslist=map(lambda i: tag+ '_' + str(i) + '.' + fileslist[i].split('.')[1],range(len(fileslist)))
+    log = zip(fileslist,newfileslist)
+    with open( 'renamed_'+tag+'.pkl', "w" ) as f:
+        pickle.dump(log, f)
+    print directory
+    for old, new in log:
+        os.rename(directory+'/'+old,directory+'/'+new)
+    print 'rename done'
