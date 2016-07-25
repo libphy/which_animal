@@ -8,6 +8,7 @@ import os
 
 global DATADIR
 global PKLDICT
+global DESTDIR
 
 def createdata(key, fft_win=25,fft_hop=10,**kwargs):
     """Create mfcc matrix dataset for all files associated anumal key
@@ -17,12 +18,12 @@ def createdata(key, fft_win=25,fft_hop=10,**kwargs):
     dur: slice width of a time series signal in second (default: 1)
     discard_short: discard the time series data if it's shorter than slice width you want (default: True).
     """
-    subdir = '_'.join(['dur'+str(kwargs['dur']).replace('.','p'),'win'+str(fft_win).replace('.','p'),'hop'+str(fft_hop).replace('.','p')])
-    destdir = DATADIR+'nparrays/'+key+'/'+subdir+'/'
-    print destdir
-    if not os.path.exists(destdir):
-        os.makedirs(destdir)
+    duration = kwargs['dur']
+    subdir = '_'.join(['dur'+str(duration).replace('.','p'),'win'+str(fft_win).replace('.','p'),'hop'+str(fft_hop).replace('.','p')])
+    DESTDIR = DATADIR+'nparrays/'+key+'/'+subdir+'/'
 
+    if not os.path.exists(DESTDIR):
+        os.makedirs(DESTDIR)
 
     ext = '.npy'
     with open(DATADIR+PKLDICT[key]) as f:
@@ -32,19 +33,34 @@ def createdata(key, fft_win=25,fft_hop=10,**kwargs):
         y,sr = librosa.load(DATADIR+key+'/'+fn)
         yn = y/(abs(y).max())
         k=0
-
         for tu in tulist:
             i=int(tu[0])
             j=int(tu[1])
-            yseg = windowcut(yn,i,j,sr=sr,**kwargs)
-            mfcc = librosa.feature.mfcc(y=yseg, sr=sr, n_fft = round(fft_win/1000*sr), hop_length=round(fft_hop/1000*sr)) # 25 ms width and 10 ms slide
-            mfcc_delta = librosa.feature.delta(mfcc)
-            mfcc_delta2 = librosa.feature.delta(mfcc, order=2)
-            res = np.array([mfcc,mfcc_delta,mfcc_delta2])
-            savename = '_'.join([fn.split('.')[0],'k'+str(k)])
-            np.save(destdir+savename+ext,res)
+            if j-i <= round(duration*sr):
+                yseg = windowcut(yn,i,j,sr=sr,**kwargs)
+                savename = '_'.join([fn.split('.')[0],'k'+str(k)])
+                savemfcc(DESTDIR+savename+ext, yseg=yseg,sr=sr,fft_win=fft_win,fft_hop=fft_hop)
+            else:
+                m=0
+                cut = lambda x: (2*x+1)*round(duration*sr/2)
+                slices = filter(None,map(lambda n: (int(i+cut(n)-cut(0)),int(i+cut(n)+cut(0))) if i+cut(n)<j else None, range(int(math.ceil(duration*sr)))))
+                for tu in slices:
+                    ii=int(tu[0])
+                    jj=int(tu[1])
+                    yseg = windowcut(yn,ii,jj,sr=sr,**kwargs)
+                    savename = '_'.join([fn.split('.')[0],'k'+str(k)+'_'+'m'+str(m)])
+                    # print DESTDIR+savename+ext
+                    savemfcc(DESTDIR+savename+ext, yseg=yseg,sr=sr,fft_win=fft_win,fft_hop=fft_hop)
+                    m+=1
             k+=1
     print 'Done'
+
+def savemfcc(savetarget, yseg, sr, fft_win, fft_hop):
+    mfcc = librosa.feature.mfcc(y=yseg, sr=sr, n_fft = round(fft_win/1000*sr), hop_length=round(fft_hop/1000*sr)) # 25 ms width and 10 ms slide
+    mfcc_delta = librosa.feature.delta(mfcc)
+    mfcc_delta2 = librosa.feature.delta(mfcc, order=2)
+    res = np.array([mfcc,mfcc_delta,mfcc_delta2])
+    np.save(savetarget,res)
 
 def windowcut(y,i,j,dur=1,sr=22050,discard_short=True):
     """ Returns a slice of y with a specified width
@@ -71,6 +87,6 @@ def windowcut(y,i,j,dur=1,sr=22050,discard_short=True):
 if __name__ =='__main__':
 
     DATADIR = '/home/geena/projects/which_animal/data/selected/'
-
     PKLDICT={'cat':'cat_slice_new.pkl','dog':'dog_slice_new.pkl'}
     createdata('cat',dur=1,discard_short = False, fft_win=25,fft_hop=10)
+    createdata('dog',dur=1,discard_short = False, fft_win=25,fft_hop=10)
