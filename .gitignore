@@ -9,6 +9,6 @@ IPYNB/
 code/EDA_DataCleaning/.ipynb_checkpoints
 temp
 #etc/progress.md
-etc/resource.md
+etc/do_not_upload/
 #files
 *.pyc
