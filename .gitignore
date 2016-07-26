@@ -8,7 +8,7 @@ IPYNB/
 .ipynb_checkpoints
 code/EDA_DataCleaning/.ipynb_checkpoints
 temp
-etc/progress.md
+#etc/progress.md
 
 #files
 *.pyc
