@@ -107,6 +107,6 @@ def rescale(m):
 if __name__ =='__main__':
 
     DATADIR = '/home/geena/projects/which_animal/data/selected/'
-    PKLDICT={'cat':'cat_slice_new.pkl','dog':'dog_slice_new.pkl'}
+    PKLDICT={'cat':'cat_slice_new2.pkl','dog':'dog_slice_new.pkl'}
     createdata('cat',dur=1,discard_short = False, fft_win=50,fft_hop=25, n_mfcc=13)
     createdata('dog',dur=1,discard_short = False, fft_win=50,fft_hop=25, n_mfcc=13)

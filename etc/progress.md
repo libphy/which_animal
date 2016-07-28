@@ -144,7 +144,7 @@ One convolution in one conv layer shrinks each dimension size by 2 pixels when 3
 Helps the net see the bigger field of view. It's also like down-sampling, so the net can see overall shapes rather than wrinkles and speckles. However, when image is already small, pooling too much seems deteriorate the performance. Usually takes 2x2 shape and strides of 1x1. In VGG net, stride of both 1x1 and 2x2 were used, but when I tested on my 2-layer conv net, since my image was already small, bigger strides performed worse.
 
 - Dropouts:
-It's been said that dropout acts as regularization.
+Dropout acts as regularization.
 
 - Existence of a Batch Normalization layer after each conv layer:   
 It is a good idea to have a batch normalization layer after conv layer to normalize weights for mini batches for each layer. It normalizes weights in each layer such that the weights after several layers with activations would not blow up, which happens more often as nets get deeper. It's been reported that having BN layers makes training easier without having to worry about careful initialization of weights and allows to use higher learning rates and sometimes eliminates need of dropouts. ([Read more..](http://jmlr.org/proceedings/papers/v37/ioffe15.pdf))
@@ -169,3 +169,34 @@ It is weird that test accuracy is still going up nevertheless.
 It may be because that data in train, validation and test are very similar.
 I suspect that it maybe because 1 second sampling may include several signals in it so 1 second sampling of adjacent peak may contain the same neighbors thus some features are repeated throughout the whole data pool- this can happen when there are a bunch of peaks closely located each other in time domain (say, a dog barking furiously).
 One idea to test if this is the case is that I can set aside files before I pooling 1-second signal segments such that train and test set never share the same recording.
+
+### 7/27/2016
+Testing the data quality  
+I modified data loading code such that it set aside files for test set according to test-train split ratio, then shuffle within each sets- therefore test files are from totally different audio files from those of train set so it can test more generalization ability of models.
+Then the n_epoch mystery I mentioned the day before (the accuracy goes up even though validation errors go up as n_epoch increases) got solved. Overall, the accuracy/precision of models got reduced by a few percent: 82-83% for single layer model down from 85%, 83-84% for double layer model down from 88%.
+However it is also unfair that the set aside test set for both cats (more severely) and dogs are dominated by examples that are under-represented in training set. For example, in the training set of cats, there were very few files that contain purr sound, where as in test set,purr sound is dominated. Also dog training set has lots of barks and a few howls, but test set for dog is dominated by howl.
+Therefore this train-test split by setting aside a last few files was kind of unfair.
+When I compare performance drop when a model sees a very different data, it seems the single layer model better generalize and had less performance drop.
+
+Getting multilayer model to work.
+- I tried 6-conv layer model, which is 3 stacks of [conv(3x3,zeropad,relu)conv(3x3,zeropad,relu),maxpool(2x2)] layer. It is a variant of Stanford's CIFAR10 ConvJS model which is 3 stacks of [conv(5x5,zeropad,relu),conv(5x5,zeropad,relu),maxpool(2x2)].  
+- At first the training loss blew up from the first epoch. I guessed it was from blowing up gradient, so tried lowering learning rate and changing other SGD parameters but there was no luck.  
+I heard that selecting initialization matters more when the net gets deeper and oftentimes it's more important for the first and last layers. So I did some search on initialization methods and there were so many opinions. I tried a method called Glorot_normal- it is a normal distribution with a scaling (standard dev) proportional to 1/sqrt(n_in+n_out), where n_in and n_out are number of neurons fed into the weights and number of neurons that result out from the weights.
+Applying Glorot init to Dense layer at the end showed decreasing loss at first and at some point it blew up again. Adding Glorot init to first conv layer as well finally made the net work.
+I tried applying the glorot initialization to other conv layers but there was no meaningful changes.  
+- Playing with number of filters helped to reach 86-88% level. Learning rate was E-3, with decay of E-4.  
+- I compared with and without pooling layers after 2 conv stacks but it didn't seem to matter much.  
+- Tried including L1L2 regularization in the first conv layer- it did not help or made it worse- so I took it out.  
+- Increased decay rate in SGD. SGD decay rate makes learning rate smaller by some factor each epoch, so helps to reduce validation error. I tried values between 1 and 0.001, values 0.1 or 0.01 seemed to help reducing validation error.  
+- Tried adding FC layer before the output layer, with and with out drop outs. Didn't help.  
+- Added dropout layers after conv pair stacks. It did not improve accuracy, but certainly helped a lot to decrease validation error.
+0.25,0.25,0.25 gave good result 88% without overfitting.  
+filters (64,64;64,64;32,32)
+glorot normal on 1st conv and output layer
+lr=E-3, decay=E-2 bat 2, 15 epoch
+
+| class   |precision  |  recall | f1-score |  support|
+|-----------|---------|----------|----------|
+|0.0     |  0.94   |   0.87   |   0.90   |    409|
+|1.0    |   0.75   |   0.89   |   0.82    |   190|
+|avg / total   |    0.88   |   0.87   |   0.88   |    599|

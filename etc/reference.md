@@ -18,9 +18,12 @@ Take-away: Mfcc arrays can be used as image input in CNN. Use the log-energy com
 - [SR Wiki:  mfcc](http://recognize-speech.com/feature-extraction/mfcc#)   
 - [web tutorial:  mfcc](http://practicalcryptography.com/miscellaneous/machine-learning/guide-mel-frequency-cepstral-coefficients-mfccs/)
 
-### Resources for deep neural network architecture heuristics
+### Resources for deep neural network heuristics
 1. [General heuristics on convolutional neural nets](http://cs231n.github.io/convolutional-networks/)
 2. [Batch normalization](http://jmlr.org/proceedings/papers/v37/ioffe15.pdf)
+3. Glorot initialization:
+  - [Understanding the difficulty of training deep feedforward neural networks](http://jmlr.org/proceedings/papers/v9/glorot10a/glorot10a.pdf)
+  - [Xavier initializtion: a variant of Glorot init](http://andyljones.tumblr.com/post/110998971763/an-explanation-of-xavier-initialization)
 
 ### Useful tools
 - [DSP python tools](https://github.com/AllenDowney/ThinkDSP) : Signal processing tools. I used it for sound data exploration.
