@@ -13,6 +13,7 @@ cookies = dict(res.cookies)
 def get_pages(url, lastpg): #returns list of item pages
     pages=[]
     for i in range(int(lastpg)):
+        print i
         pgurl = url[:-1]+str(i+1)
         r_i=s.get(pgurl,cookies=cookies) #This website needs cookie to access other pages.
         soup_i = BS(r_i.text,'html')
@@ -62,7 +63,7 @@ def downloadfiles(linkslist, downloaddir, path2pkl=None):
         downloaddir: <folder path> a direcory where downloaded files will be saved.
         path2pkl: <file path> a file path to a saved download links pickle file.
     """
-    if path2pkl not None:
+    if path2pkl != None:
         with open(path2pkl) as f:
             links = pickle.load(f)
     else:
@@ -89,14 +90,15 @@ if __name__ == '__main__':
     # Later I wrote another code that can navigate to search animals using selenium to download annotation csv file.
     # Below is an example
     urldict = {'cat':'http://www.tierstimmenarchiv.de/webinterface/contents/querytext.php?mode=clearresults&querytext_1=Felis%20silvestris%20f.%20domestica&queryfield_1=species&querytype_1=matches&fields=1&startvalue=1',
-    'dog':'http://www.tierstimmenarchiv.de/webinterface/contents/querytext.php?querytext_2=Canis+lupus+f.+familiaris&sel_2=Haushund&sel_3=Domestic+dog&queryfield_2=species&querytype_2=matches&querytext_1=&queryfield_1=description&querytype_1=contains&fields=2&startvalue=1'}
-    cat_url = urldict['cat']
-    catlinks = datalinks_species(cat_url)
+    'dog':'http://www.tierstimmenarchiv.de/webinterface/contents/querytext.php?querytext_2=Canis+lupus+f.+familiaris&sel_2=Haushund&sel_3=Domestic+dog&queryfield_2=species&querytype_2=matches&querytext_1=&queryfield_1=description&querytype_1=contains&fields=2&startvalue=1',
+    'bird':'http://www.tierstimmenarchiv.de/webinterface/contents/querytext.php?datefrom=&dateuntil=&queryfield_1=English_Name&Deutscher_Name=system%2Cspecies%2CArtname&English_Name=system%2Cspecies%2CArtname&Artname=system%2Cspecies%2CArtname&Familia=system%2Cspecies%2CArtname&Ordo=system%2Cspecies%2CArtname&Klasse=system%2Cspecies%2CArtname&querytext_1=finch&querytype_1=contains&queryfield_2=&querytext_2=&querytype_2=contains&queryfield_3=&subspecies=&locality=&Bundesland=laender%2Ccountry%2Ciso_two_chars&Country=laender%2Ccountry%2Ciso_two_chars&state=&administrative_area=&scenic_area=&habitat=&sound_type=&sex=&age=&description=&notes=&filename=&background_species=&recording_type=&description_en=&usage_permission=&querytext_3=&querytype_3=contains&queryfield_4=&querytext_4=&querytype_4=contains&queryfield_5=&querytext_5=&querytype_5=contains&queryfield_6=&querytext_6=&querytype_6=contains&fields=6&startvalue=1'}
+    bird_url = urldict['bird']
+    birdlinks = datalinks_species(bird_url)
     #####(optional) saving/loading pickle
     # with open( "catlinks.pkl", "w" ) as f:
     #     pickle.dump(catlinks, f)
     # with open( "catlinks.pkl") as f:
     #     catlinks = pickle.load(f)
     #####
-    directory = '/home/geena/projects/which_animal/data/scrape/tierstimmen/cat'
-    downloadfiles(catlinks, directory)
+    directory = '/home/geena/projects/which_animal/data/scrape/tierstimmen/bird'
+    downloadfiles(birdlinks, directory)

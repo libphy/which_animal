@@ -1,3 +1,5 @@
+# Daily Progress
+
 ### 7/15/2016
 
 I found randomly in internet a resource where mfcc is calculated using scikits.audiolab andsscikits.talkbox, so decided to try them.
@@ -200,3 +202,33 @@ lr=E-3, decay=E-2 bat 2, 15 epoch
 |0.0     |  0.94   |   0.87   |   0.90   |    409|
 |1.0    |   0.75   |   0.89   |   0.82    |   190|
 |avg / total   |    0.88   |   0.87   |   0.88   |    599|
+
+
+### 07/28/2016
+Scraped bird sound data. Since there were so many bird breeds in the Tierstimmen archive, I chose a search term finch.
+Just finch alone had over 1200 sound files (compared to dog and cats were about 100 each).
+Some finch sound recoding files had noticeable white noise in the background.
+I wrote an additional few lines of codes in the data preparation script such that it discards sound that may have constant white noise in the background.
+After filtering those out, I got over 500 files, and then slicing them into 1 second (by the way, sometimes bird sounds are longer than 1 second, but I used 1 second to keep the same length with cats and dogs), I got around 3800 1s slices which was a lot more than cats (~1000 slices) and dogs (~2000 slices).
+Using imbalanced data as it is, I got 80-85% from single and double layer conv nets without changing parameters.
+I got 90% average accuracy from 6-layer conv net when I adjusted n_epoch to 10.
+
+|class|precision |   recall | f1-score |  support|
+|-----------|---------|----------|----------|
+|0   |    0.84   |   0.90   |   0.87    |   386|
+|1   |    0.74   |   0.70   |   0.72    |   176
+|2   |    0.97   |   0.95   |   0.96   |    761
+|avg / total    |   0.90    |  0.90   |   0.90   |   1323|
+
+class- 0: dog, 1:cat, 2:bird
+
+On balanced data. 1000 slices were randomly chosen from each category.
+
+|class|precision |   recall | f1-score |  support|
+|-----------|---------|----------|----------|
+|0  |     0.85  |    0.88    |  0.86   |    192|
+|1  |     0.83  |    0.94   |   0.89   |    196|
+|2  |     0.99  |    0.84   |   0.91    |   212|
+|avg / total  |     0.90   |   0.89   |   0.89  |     600|
+
+Increasing the regularization (dropout rate) and adjusting learning rate & n_epoch helped to validation loss's decrease over epoch. I concluded that the behavior of validation loss is similar to error of a feedback loop for an oscillation system, where dropouts act as damping and learning rate is similar to a proportional gain.  
