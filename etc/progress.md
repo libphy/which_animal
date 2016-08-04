@@ -105,7 +105,7 @@ However, in case the tuples are close to each other it does not take it into acc
   - At first it didn't work and gave all zeros or all ones.
 I noticed a mistake that I didn't rescale the arrays so it had large negative and positive values.
 So I rescaled them such that minimum of the concatenated array (39x39) is 0 and maximum is 1, however the output of simple model was still all zero.  
-I noticed that the original mfcc arrays have huge negative values in the first row (lowest mel frequency band), distinguished from all other rows, which may still push other rows to white side in the image. And it seems to appear in all files regardless of sounds types.  
+I noticed that the original mfcc arrays have huge negative values in the first row (0th mfcc), distinguished from all other rows, which may still push other rows to white side in the image. And it seems to appear in all files regardless of sounds types.  
   - So I modified codes to filter the first row out and produce 36x36 rescaled image patches.  
 Then it worked for the simple one-layer 2d conv net and it gave about 80% accuracy and 80% precision for binary (dog & cat) classification when 3000 data are used.  
   - I tested two rescaling methods: (1) rescaling each mfcc/delta/delta2 matrix by its own max absolute amplitude. (2) rescaling the concatenated patch (mfcc+delta+delta2) all at once by global max amplitude in the patch. I ran 1 layer 2dconv but there was no difference in performance to both cases (80% precision and 80% accuracy) although rescaling each seemed to have more features (wrinkles in the array image) noticeable by human eyes.  

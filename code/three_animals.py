@@ -106,7 +106,7 @@ def ConvJS(X_train, X_test, y_train, y_test):
     model.add(ZeroPadding2D((1,1),input_shape=(1, 36, 36)))
     model.add(Convolution2D(nb_filter = 64, nb_row = 3, nb_col = 3, border_mode='valid', activation = 'relu', init='glorot_normal'))
     model.add(ZeroPadding2D((1,1)))
-    model.add(Convolution2D(64, 3, 3, activation='relu'))
+    model.add(Convolution2D(64, 3, 3, activation='relu',init='glorot_normal'))
     model.add(MaxPooling2D((2,2), strides=(1,1)))
     model.add(Dropout(0.25))
 

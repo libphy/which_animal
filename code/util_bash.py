@@ -1,12 +1,13 @@
 import os
 import subprocess
 
-def convert2wav(directory): # convert non-.wav audio files to .wav files using ffmpeg
+def convert2wav(directory, sub): # convert non-.wav audio files to .wav files using ffmpeg
     # When converting, my standard options are: sampling rate 22050 Hz, 1 channel
     audioformats = ['mp3','flac','ogg','aiff','aif']
-    fileslist = os.listdir(directory)
-    subprocess.check_output(['bash','-c', 'mkdir '+directory+'/standard'])
-    bashCommandlist = filter(None,map(lambda name: 'ffmpeg -i '+ directory + '/'+ name + ' -ar 22050 -ac 1 '+ directory+'/standard/'+ name.split('.')[0]+'.wav' if str(name.split('.')[1]) in audioformats else None, fileslist))
+    if not os.path.isdir(directory+sub):
+        os.makedir(directory+sub)
+    fileslist = filter(os.path.isfile, os.listdir(directory))
+    bashCommandlist = filter(None,map(lambda name: 'ffmpeg -i '+ directory + name + ' -ar 22050 -ac 1 '+ directory+sub+ name.split('.')[0]+'.wav' if str(name.split('.')[1]) in audioformats else None, fileslist))
     for command in bashCommandlist:
         subprocess.check_output(['bash','-c', command])
     print '.wav conversion done'
