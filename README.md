@@ -19,13 +19,17 @@ For dogs, there were many different sounds subcategories recorded as description
 
 For birds, many had large white noise background since the field recording usually happens outdoor from far distances. After applying a pick detection script to filter out files with large background noise, about 500 files were kept.
 
-My pick detection script uses a simple algorithm that it detects peaks by selecting time windows with energy density (the sum of amplitude squared with in a time window of 0.2 second) more than 4% of the average energy density of the full length of the audio signal in the file. The threshold choice of 4% seemed to work well for all animal types and sound sub categories of each animal.
-![Fig.1](https://github.com/libphy/which_animal/images/catslice1.png)
-![Fig.2](https://github.com/libphy/which_animal/images/catslice2.png)
+My pick detection script uses a simple algorithm that it detects peaks by selecting time windows with energy density (the sum of amplitude squared with in a time window of 0.2 second) more than 4% of the average energy density of the full length of the audio signal in the file. The threshold choice of 4% seemed to work well for all animal types and sound sub categories of each animal.  
+<img alt="Peak detection for meow" src="images/catslice1.png" width=400>  
+<sub><b>Figure 1: </b> Peak detection of 'meow' sounds.  </sub>     
 
 ## Feature Extraction
-I used Mel-frequency cepstral coefficients (MFCCs) as a feature extraction method. [Fig.3](https://github.com/libphy/which_animal/images/mfccdiagram.png)
-[Fig.4](https://github.com/libphy/which_animal/images/mfccdiagram.png)
+I used Mel-frequency cepstral coefficients (MFCCs) as a feature extraction method.
+
+<img alt="MFCCs calculation process" src="images/mfccdiagram.png" width=800>  
+<sub><b>Figure 2: </b> MFCCs calculation process </sub>     
+<img alt="MFCCs meow" src="images/meow_mfcc.png" width=800>    
+<sub><b>Figure 3: </b> MFCCs and delta, delta-delta, and mel-spectrum for 'meow' sound. </sub>    
 
 ## Models
 
