@@ -4,18 +4,28 @@ This project is about animal sound recognition using convolutional neural networ
 
  Mel frequency cepstrum is a short-term power spectrum of a sound which represent a logarithmic energy in each frequency band in non-linear Mel scale to approximate the human auditory system's respond to a sound. The amplitudes of the envelops of the power spectrum are the coefficients called Mel-frequency cepstral coefficients (MFCCs) and are one of the most popular feature extraction methods in speech recognition.
 
-## Data Scraping and Cleaning
+## Data Collection and Cleaning
 I scraped data from the two websites below:
 1. [TierstimmenArchiv](http://www.tierstimmenarchiv.de/webinterface/contents/treebrowser.php) : an animal sound research archive in Germany
 2. [Freesound.org](https://www.freesound.org) : a crowd-sourced database on sounds and sound effects
 
-Tierstimmenachiv is an animal sound database for researchers. They have sound data from variety of animals including birds, domestic mammals, wild mammals, amphibians, reptiles, and more. I chose cats and dogs because I thought they would be fun, but later I realized that cat and dog sound data is hard to find as opposed to bird sound data which outnumbers all other animal sounds because of ornithology.  I scraped data using Selenium and Requests, and got 50 files for cat sounds and 120 for dog sounds after filtering blank pdf files they had in the data download links.   
+Tierstimmenachiv is an animal sound database for researchers. They have sound data from variety of animals including birds, domestic mammals, wild mammals, amphibians, reptiles, and more. I chose cats and dogs because I thought they would be fun, but later I realized that cat and dog sound data is hard to find as opposed to bird sound data which outnumbers all other animal sounds because of ornithology.  I scraped data using Selenium and Requests, and got 50 files for cat sounds, 120 files for dog sounds. over 1200 files for 'finch' alone in birds categories after filtering blank pdf files they had in the data download links.   
 
-Since cat data was not enough I scraped more files from freesound.org website. Freesound had over 300 listings for the search keyword 'meow'. However the quality of the data was not as good as Tierstimmen, since it had many mis-categorized data such as human voice recordings imitating a cat sound or sound effects that are mixed with cat sounds. I wrote a script to parse texts from title, description, and tags of the listings and applied word filtering to get rid of those wrong files, then I manually corrected some of the tags for data from Freesound. Tierstimmen also has sound descriptions written in German, so I wrote a script to extract and translate the sound keywords.
+Since the cat data from Tierstimmen was not enough I scraped more files from freesound.org website. Freesound had over 300 listings for the search keyword 'meow'. However the quality of the data was not as good as Tierstimmen, since it had many mis-categorized data such as human voice recordings imitating a cat sound or sound effects that are mixed with cat sounds. I wrote a script to parse texts from title, description, and tags of the listings and applied word filtering to get rid of those wrong files, then I manually corrected some of the tags for data from Freesound. Tierstimmen also has sound descriptions written in German, so I wrote a script to extract and translate the sound keywords.
 
-Then I used Pandas, matplotlib, ipython widgets, IPython display and Audio for further data cleaning and data exploration process.
+Then I used Pandas, matplotlib, ipython widgets, IPython display and Audio for further data cleaning and data exploration process. I categorized cat sounds by 'meow', 'purr', 'yowl', 'hiss', and 'other'. For hiss sound, often times it had other noise from cat fighting or a human interaction from teasing the cat such as hitting object. Also sometimes there were cats punching on the microphone, making really loud unwanted noise. So 'hiss' and 'other' was dropped from the dataset. The files with background noise were kept in the data unless noise exceeds cat sounds.
+
+For dogs, there were many different sounds subcategories recorded as description. I grouped similar sounds together into 'bark', 'howl', 'whimper', and 'other', where 'other' includes 'group howl', 'cackle', 'growl', and 'panting'. Those categories were kept but 'licking' and 'snoring' sounds were dropped as they are not useful.    
+
+For birds, many had large white noise background since the field recording usually happens outdoor from far distances. After applying a pick detection script to filter out files with large background noise, about 500 files were kept.
+
+My pick detection script uses a simple algorithm that it detects peaks by selecting time windows with energy density (the sum of amplitude squared with in a time window of 0.2 second) more than 4% of the average energy density of the full length of the audio signal in the file. The threshold choice of 4% seemed to work well for all animal types and sound sub categories of each animal.
+![Fig.1](https://github.com/libphy/which_animal/images/catslice1.png)
+![Fig.2](https://github.com/libphy/which_animal/images/catslice2.png)
 
 ## Feature Extraction
+I used Mel-frequency cepstral coefficients (MFCCs) as a feature extraction method. [Fig.3](https://github.com/libphy/which_animal/images/mfccdiagram.png)
+[Fig.4](https://github.com/libphy/which_animal/images/mfccdiagram.png)
 
 ## Models
 
