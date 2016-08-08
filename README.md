@@ -1,31 +1,32 @@
 # which_animal
 
-This project is about animal sound recognition using convolutional neural network. Convolutional neural network has been a popular tool in image recognition but recently has been implemented also in human speech recognition. Using image features from sound data is done by creating a collection of spectrum in a short time scale.
-
- Mel frequency cepstrum is a short-term power spectrum of a sound which represent a logarithmic energy in each frequency band in non-linear Mel scale to approximate the human auditory system's respond to a sound. The amplitudes of the envelops of the power spectrum are the coefficients called Mel-frequency cepstral coefficients (MFCCs) and are one of the most popular feature extraction methods in speech recognition.
+This project is about animal sound recognition using convolutional neural network. Convolutional neural network has been a popular tool in image recognition but recently has been implemented also in human speech recognition. Extracting features in an image form from sound data is done by creating a collection of spectrum in a short time scale.
+Mel frequency cepstrum is a short-term power spectrum of a sound which represent a logarithmic energy in each frequency band in non-linear Mel scale to approximate the human auditory system's respond to a sound. The amplitudes of the envelops of the power spectrum are the coefficients called Mel-frequency cepstral coefficients (MFCCs) and are one of the most popular feature extraction methods in speech recognition. I was motivated by two works <sup>[1,2](#references)</sup>
 
 ## Data Collection and Cleaning
-I scraped data from the two websites below:
+I scraped data from the two websites below:  
 1. [TierstimmenArchiv](http://www.tierstimmenarchiv.de/webinterface/contents/treebrowser.php) : an animal sound research archive in Germany
 2. [Freesound.org](https://www.freesound.org) : a crowd-sourced database on sounds and sound effects
 
-Tierstimmenachiv is an animal sound database for researchers. They have sound data from variety of animals including birds, domestic mammals, wild mammals, amphibians, reptiles, and more. I chose cats and dogs because I thought they would be fun, but later I realized that cat and dog sound data is hard to find as opposed to bird sound data which outnumbers all other animal sounds because of ornithology.  I scraped data using Selenium and Requests, and got 50 files for cat sounds, 120 files for dog sounds. over 1200 files for 'finch' alone in birds categories after filtering blank pdf files they had in the data download links.   
+Tierstimmenachiv is an animal sound database for researchers. They have sound data from variety of animals including birds, domestic mammals, wild mammals, amphibians, reptiles, and more. I chose cats and dogs because I thought they would be fun, but later I realized that cat and dog sound data is hard to find as opposed to bird sound data which outnumbers all other animal sounds because of data demand from ornithologists.  I scraped data using Selenium and Requests, and got 50 files for cat sounds, 120 files for dog sounds. over 1200 files for 'finch' alone in bird categories after filtering blank pdf files they had in the data download links.   
 
-Since the cat data from Tierstimmen was not enough I scraped more files from freesound.org website. Freesound had over 300 listings for the search keyword 'meow'. However the quality of the data was not as good as Tierstimmen, since it had many mis-categorized data such as human voice recordings imitating a cat sound or sound effects that are mixed with cat sounds. I wrote a script to parse texts from title, description, and tags of the listings and applied word filtering to get rid of those wrong files, then I manually corrected some of the tags for data from Freesound. Tierstimmen also has sound descriptions written in German, so I wrote a script to extract and translate the sound keywords.
+Since the cat data from Tierstimmen was not enough I scraped more files from freesound.org website. Freesound had over 300 listings for the search keyword 'meow'. However the quality of the data was not as good as Tierstimmen, since it had many mis-categorized data such as human voice recordings imitating a cat sound or sound effects that are mixed with cat sounds. I wrote a script to parse texts from title, description, and tags of the listings and applied word filtering to get rid of those unwanted files, then I manually corrected some of the tags for data from Freesound. Tierstimmen also has sound descriptions written in German, so I wrote a script to extract and translate the sound keywords.
 
-Then I used Pandas, matplotlib, ipython widgets, IPython display and Audio for further data cleaning and data exploration process. I categorized cat sounds by 'meow', 'purr', 'yowl', 'hiss', and 'other'. For hiss sound, often times it had other noise from cat fighting or a human interaction from teasing the cat such as hitting object. Also sometimes there were cats punching on the microphone, making really loud unwanted noise. So 'hiss' and 'other' was dropped from the dataset. The files with background noise were kept in the data unless noise exceeds cat sounds.
+Then I used Pandas, matplotlib, ipython widgets, IPython display and Audio for further data cleaning and data exploration process. I categorized cat sounds by 'meow', 'purr', 'yowl', 'hiss', and 'other'. For hiss sound, often times it had other noise from cat fighting or a human teasing the cat by hitting object to make the cat hiss. Also sometimes there were cats punching on the microphone, making really loud unwanted noise. So 'hiss' and 'other' were dropped from the dataset. The files with background noise were kept in the data unless the noise exceeds cat sounds.
 
-For dogs, there were many different sounds subcategories recorded as description. I grouped similar sounds together into 'bark', 'howl', 'whimper', and 'other', where 'other' includes 'group howl', 'cackle', 'growl', and 'panting'. Those categories were kept but 'licking' and 'snoring' sounds were dropped as they are not useful.    
+For dogs, there were many different sounds subcategories in descriptions. I grouped similar sounds together into a few groups: 'bark', 'howl', 'whimper', and 'other', where 'other' includes 'group-howl', 'cackle', 'growl', and 'panting'. Those categories were kept but 'licking' and 'snoring' sounds were dropped as they are not useful.    
 
-For birds, many had large white noise background since the field recording usually happens outdoor from far distances. After applying a pick detection script to filter out files with large background noise, about 500 files were kept.
+For birds, many had large white noise background since the field recording often happens outdoor and from far distances. After applying a pick detection script to filter out files with large background noise, about 500 files were kept.
 
-My pick detection script uses a simple algorithm that it detects peaks by selecting time windows with energy density (the sum of amplitude squared with in a time window of 0.2 second) more than 4% of the average energy density of the full length of the audio signal in the file. The threshold choice of 4% seemed to work well for all animal types and sound sub categories of each animal.  
+My peak detection script uses a simple algorithm that it detects peaks by selecting time windows with energy density (the sum of amplitude squared with in a time window of 0.2 second) more than 4% of the average energy density of the full length of the audio signal in the file. The threshold choice of 4% seemed to work well for all animal types and sound sub categories of each animal.  
 <img alt="Peak detection for meow" src="images/catslice1.png" width=400>  
 <sub><b>Figure 1: </b> Peak detection of 'meow' sounds.  </sub>     
 
 ## Feature Extraction
-I used Mel-frequency cepstral coefficients (MFCCs) as a feature extraction method.
-
+I used Mel-frequency cepstral coefficients (MFCCs) as a feature extraction method. As shown in Fig.1, MFCC is calculated by   
+1) Slicing the audio signal into short time interval and taking a short-term fast Fourier transform (STFT); in a human speech recognition 20-40 ms time interval is common but I used 50 ms time interval with 50% overlap (25 ms slide).
+2) Getting Mel-frequency spectrum by filtering the STFT result with triangular-shaped band-pass filters. Mel filters mimics how human auditory system responds to different frequencies (log-scale rather than linear scale), and can be calculated by ```M(f) = 1125 * ln(1+f/700)```. In the resulting Mel-frequency spectrum, the values represent the energy in the frequency range in Mel-scale; usually logarithm of the energy is more useful as human perceived loudness in a log scale.   
+3) Extracting cepstral coefficients by taking discrete cosine transform. Discrete cosine transform
 <img alt="MFCCs calculation process" src="images/mfccdiagram.png" width=800>  
 <sub><b>Figure 2: </b> MFCCs calculation process </sub>     
 <img alt="MFCCs meow" src="images/meow_mfcc.png" width=800>    
@@ -35,9 +36,7 @@ I used Mel-frequency cepstral coefficients (MFCCs) as a feature extraction metho
 
 ## Results
 
-## Reference & Resource
-
-### References
+## References
 1. Matthias Zeppelzauer, Discrimination and retrieval of animal sounds. Technischen Universit ̈at Wien, Thesis (2005).
 Take-away: MFCC performs the best among various sound featurization techniques. First 7 MFCCs suffice to have 70+% recall and precision for cats, dogs, birds, and cows classification. Each category had around 100 sound file data. Analysis done in knn, svm, etc, but have not  been tried in neural network.  
 
@@ -47,7 +46,7 @@ Take-away: MFCC performs the best among various sound featurization techniques. 
 
 4. Nitish Srivastava et.al., Dropout: a simple way to prevent neural networks from overfitting., Journal of Machine Learning Research, Vol. 15 (1), pp.1929-1958 (2014)
 
-5. Xavier Clorot & Yoshua Bengio, Understanding the difficulty of training deep feedforward neural networks. JMLR Proceedings of AISTATS, Vol. 9, pp.249-256 (2010)
+5. Xavier Glorot & Yoshua Bengio, Understanding the difficulty of training deep feedforward neural networks. JMLR Proceedings of AISTATS, Vol. 9, pp.249-256 (2010)
 
 6. [Stanford CS231n resources](http://cs231n.github.io/)
 
