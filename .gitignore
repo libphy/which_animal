@@ -12,3 +12,7 @@ temp
 etc/do_not_upload/
 #files
 *.pyc
+*.json
+*.h5
+*.h5py
+*.html
