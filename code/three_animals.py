@@ -146,3 +146,9 @@ if __name__=='__main__':
     # model1 = single_layer(X_train, X_test, y_train, y_test)
     # model2 = double_layer(X_train, X_test, y_train, y_test)
     model3 = ConvJS(X_train, X_test, y_train, y_test)
+
+    ##saving a model and weights
+    # js = model.to_json()
+    # with open("double_model.json","w") as f:
+    #         f.write(js)
+    # model.save_weights("double_W.h5py")

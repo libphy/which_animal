@@ -4,9 +4,9 @@ This project is about animal sound recognition using convolutional neural networ
 Mel frequency cepstrum is a short-term power spectrum of a sound which represent a logarithmic energy in each frequency band in non-linear Mel scale to approximate the human auditory system's respond to a sound. The amplitudes of the envelops of the power spectrum are the coefficients called Mel-frequency cepstral coefficients (MFCCs) and are one of the most popular feature extraction methods in speech recognition. I was motivated by two works <sup>[1,2](#references)</sup>
 
 ## Data Collection and Cleaning
-I scraped data from the two websites below:  
-1. [TierstimmenArchiv](http://www.tierstimmenarchiv.de/webinterface/contents/treebrowser.php) : an animal sound research archive in Germany
-2. [Freesound.org](https://www.freesound.org) : a crowd-sourced database on sounds and sound effects
+I scraped data from the two websites below:    
+1. [TierstimmenArchiv](http://www.tierstimmenarchiv.de/webinterface/contents/treebrowser.php) : an animal sound research archive in Germany   
+2. [Freesound.org](https://www.freesound.org) : a crowd-sourced database on sounds and sound effects   
 
 Tierstimmenachiv is an animal sound database for researchers. They have sound data from variety of animals including birds, domestic mammals, wild mammals, amphibians, reptiles, and more. I chose cats and dogs because I thought they would be fun, but later I realized that cat and dog sound data is hard to find as opposed to bird sound data which outnumbers all other animal sounds because of data demand from ornithologists.  I scraped data using Selenium and Requests, and got 50 files for cat sounds, 120 files for dog sounds. over 1200 files for 'finch' alone in bird categories after filtering blank pdf files they had in the data download links.   
 
@@ -23,16 +23,21 @@ My peak detection script uses a simple algorithm that it detects peaks by select
 <sub><b>Figure 1: </b> Peak detection of 'meow' sounds.  </sub>     
 
 ## Feature Extraction
-I used Mel-frequency cepstral coefficients (MFCCs) as a feature extraction method. As shown in Fig.1, MFCC is calculated by   
-1) Slicing the audio signal into short time interval and taking a short-term fast Fourier transform (STFT); in a human speech recognition 20-40 ms time interval is common but I used 50 ms time interval with 50% overlap (25 ms slide).
-2) Getting Mel-frequency spectrum by filtering the STFT result with triangular-shaped band-pass filters. Mel filters mimics how human auditory system responds to different frequencies (log-scale rather than linear scale), and can be calculated by ```M(f) = 1125 * ln(1+f/700)```. In the resulting Mel-frequency spectrum, the values represent the energy in the frequency range in Mel-scale; usually logarithm of the energy is more useful as human perceived loudness in a log scale.   
-3) Extracting cepstral coefficients by taking discrete cosine transform. Discrete cosine transform
+I used Mel-frequency cepstral coefficients (MFCCs) as a feature extraction method. As shown in Fig.1, MFCC is calculated by     
+1. Slicing the audio signal into short time interval and taking a short-term fast Fourier transform (STFT); in a human speech recognition 20-40 ms time interval is common but I used 50 ms time interval with 50% overlap (25 ms slide).  
+2. Getting Mel-frequency spectrum by filtering the STFT result with triangular-shaped band-pass filters. Mel filters mimics how human auditory system responds to different frequencies (log-scale rather than linear scale), and can be calculated by ```M(f) = 1125 * ln(1+f/700)```. In the resulting Mel-frequency spectrum, the values represent the energy in the frequency range in Mel-scale; usually logarithm of the energy is more useful as human perceived loudness in a log scale.     
+3. Extracting cepstral coefficients by taking discrete cosine transform. Discrete cosine transform gives information about how strong each envelop is in the frequency domain. It gives more global view of the sound spectrum rather than source-dependent high harmonics. However, some researchers believe that it ruins locality of information, and suggest to use log-energy of the Mel-spectrum instead of the cepstral coefficients from discrete cosine transform <sup>[2](#references)</sup>.
+
 <img alt="MFCCs calculation process" src="images/mfccdiagram.png" width=800>  
-<sub><b>Figure 2: </b> MFCCs calculation process </sub>     
+<sub><b>Figure 2: </b> MFCCs calculation process </sub>    
+
+Figure 3. shows calculated MFCCs and their first and second time derivatives delta and delta-delta (top 3 rows). The x-axis is the time interval (50 ms) and the y-axis is the index of the cepstral coefficients, and the coefficient values are represented by an arbitrary color scaling for visualization. The bottom row is a Mel-frequency spectrum with frequency range as y-axis and log-energy as color scaling. The V-shaped patterns happen when there is a 'meow' sound. Note that the image is for demo and is a full length audio (17.5 s) rather than 1 second slice. To make the input images, 1 second slice of a normalized audio signal is taken at each peak detected by a method described above, then MFCCs and time derivatives are calculated using librosa sound processing package, then the three arrays are concatenated into one square-shape array to form an image. Each pixel values are between plus minus a few tens to hundreds for MFCCs and several tens for time derivatives. The arrays are further re-scaled and it is very important to properly scaling  those to run neural networks (I'll discuss it in the following section).
 <img alt="MFCCs meow" src="images/meow_mfcc.png" width=800>    
 <sub><b>Figure 3: </b> MFCCs and delta, delta-delta, and mel-spectrum for 'meow' sound. </sub>    
 
 ## Models
+There are various deep neural network models available for image recognition tasks such as VGG net, and even weights of those models pre-trained on large image dataset are available. However, for animal sound there is no such examples readily available. Since the features in the sound spectrum are not very complicated shape like an image of an animal, I focused on modeling simple deep convolutional neural networks with relatively fewer layers and exploring how each hyper-parameters and additional layers play roles.  
+I used Keras with GPU-enabled TensorFlow backend for modeling and training. I started with a single 2d convolutional layer with no drop outs or pooling layer. At first, the neural net did not learn and predicted all zeros (label for dogs). It turns out that the input image was not properly scaled because there were large outlier pixel values in the first coefficient values for MFCCs (bottom row of each MFCCs and deltas array) which represents DC term or overall loudness and is not so informative anyway; therefore those DC terms have been removed and each array (MFCCs and deltas) has been re-scaled separately then concatenated into one. I also trimmed time-axis to make it a square shape, so the resulting array shape is 36 x 36 x 1 (13 minus one MFCCs and their time derivatives). 
 
 ## Results
 
