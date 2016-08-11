@@ -94,5 +94,7 @@ def show_layer(layer_ind, input_ind=0, nrow=None, ncol=None):
         ncol = nrow
     nice_imshow(pl.gca(), make_mosaic(out[0][input_ind], nrow, ncol), cmap=cm.binary)
     pl.show()
+#e.g. show_layer(1,nrow=8,ncol=8)
 
-    nice_imshow(pl.gca(),make_mosaic(X_test[0],1,1), cmap=cm.binary)
+#showing the input image
+nice_imshow(pl.gca(),make_mosaic(X_test[0],1,1), cmap=cm.binary)

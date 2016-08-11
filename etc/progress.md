@@ -129,7 +129,7 @@ Then it worked for the simple one-layer 2d conv net and it gave about 80% accura
 I split training set further to have validation set within the training.
 training:validation = 8:2.
 I tested an idea about convolution kernel shape in single-layer conv model.
-Since the mfcc array's vertical axis is mel frequency features and horizontal axis is a quantized time domain, I thought applying a convolution to only vertical axis or only horizontal axis may have some different result. I've tested several (nb_row x nb_col) shape filters and compared results for (3x1), (1x3), (1x5), (3x3) set and (3x3), (5x3) set, and confirmed that increasing/decreasing nb_row didn't affect (taking convolution in time axis) but increasing convolution size (nb_col) in frequency feature axis from 3 to 5 made it worse. Deceasing nb_col from 3 to 1 didn't change result.
+Since the mfcc array's vertical axis is mel frequency features and horizontal axis is a quantized time domain, I thought applying a convolution to only vertical axis or only horizontal axis may have some different result. I've tested several (nb_row x nb_col) shape filters and compared results for (3x1), (1x3), (1x5), (3x3) set and (3x3), (5x3) set, and confirmed that increasing/decreasing nb_row didn't affect, but increasing convolution size of nb_col from 3 to 5 made it worse. Deceasing nb_col from 3 to 1 didn't change result.
 Overall, the best performance was unchanged: 84-85%
 
 I moved on to multi-layer 2dCNN models. Since the degree of freedom for the architectures and the hyper-parameters are quite big, I decided to get some heuristics on choosing architectures. After discussions and reading online resources about deep cnn architectures, I've got some ideas and tested/implemented some of them.
