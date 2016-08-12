@@ -53,6 +53,7 @@ Applying Glorot init to Dense layer at the end showed decreasing loss at first a
 |1  |     0.83  |    0.94   |   0.89   |    196|
 |2  |     0.99  |    0.84   |   0.91    |   212|
 |avg / total  |     0.90   |   0.89   |   0.89  |     600|
+
 <sub><b>Table 1: </b> A sample result from 6-layer model on a balanced data. Cross-validated with 20% validation set.  </sub>     
 
 Just for fun, I visualized the output from intermediate layers such as convolutional layers and dropout layers to see if there is an interesting pattern to my eyes. Since it was a features extracted from sound data, the visual representation didn't mean much to human eyes, but I was able to see the net catches some wrinkle-like features from the images.
