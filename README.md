@@ -35,7 +35,7 @@ Figure 3. shows calculated MFCCs and their first and second time derivatives del
 <img alt="MFCCs meow" src="images/meow_mfcc.png" width=800>    
 <sub><b>Figure 3: </b> MFCCs and delta, delta-delta, and mel-spectrum for 'meow' sound. </sub>    
 
-## Models
+## Convolutional Neural Network Models and Results
 There are various deep neural network models available for image recognition tasks such as VGGNet, and even weights of those models pre-trained on large image dataset are available. However, for animal sound there is no such examples readily available. Since the features in the sound spectrum are not very complicated shape like an image of an animal, I focused on modeling simple deep convolutional neural networks with relatively fewer layers and exploring how each hyper-parameters and additional layers play roles.  
 I used Keras with GPU-enabled TensorFlow backend for modeling and training. I started with a single 2d convolutional layer with no drop outs or pooling layer. At first, the neural net did not learn and predicted all zeros (label for dogs). It turns out that the input image was not properly scaled because there were large outlier pixel values in the first coefficient values for MFCCs (bottom row of each MFCCs and deltas array) which represents DC term or overall loudness and is not so informative anyway; therefore those DC terms have been removed and each array (MFCCs and deltas) has been re-scaled separately then concatenated into one. I also trimmed time-axis to make it a square shape, so the resulting array shape is 36 x 36 x 1 (13 minus one MFCCs and their time derivatives). Once the outlier pixels got removed and images are re-scaled, the single-layer model worked to produce some numbers, then other hyper parameters were tuned which gave nearly 80-82% accuracy and precision when using balanced data and cross-validation. I tested an effect of filter size and filter shape (vertical and horizontal convolution along frequency or time axis) and confirmed that changing nb_row doesn't affect but increasing nb-col makes it worse which suggests that the feature variation in time axis is more important.
 
@@ -45,8 +45,24 @@ I used Keras with GPU-enabled TensorFlow backend for modeling and training. I st
 For the next simplest model, I used two convolutional layers and one max pool layer, since repeated form of this unit structure is popular in image recognition models such as VGGNet which uses multiple repetition of Conv-Conv-MaxPool or Conv-Conv-Conv-MaxPool patterns. So, the one stack of conv-conv-maxpool layers can be thought to be the simplest form of the repeated structure in VGGNet. All convolutional layers are zero-padded so that it keeps the image size, and have Relu activation. The first conv. layer had 128 filters and the second one has 64 filters. The double layer model needed more tweaking in learning rate and other optimization hyper-parameters to make train error not diverge, but indeed achieved higher accuracy and precision 83-86%.
 
 For the next model, I used three repeated units of conv-conv-maxpool which has total 6 convolution layers, all zero-padded and with Relu activations. Different from previous models, I added a dropout layer after each unit for regularization. It was a lot more sensitive than simpler model in a sense that it was much harder to tweak hyper parameters to make the training error or loss function (cross-categorical entropy) to converge; learning rate and decay rate were not enough to solve the diverging loss function. To cure diverging loss problem, I applied Glorot_normal initialization to some of the layers. It is a normal distribution with a scaling (standard deviation) proportional to 1/sqrt(n_in+n_out), where n_in and n_out are number of neurons fed into the weights and number of neurons that result out from the weights.
-Applying Glorot init to Dense layer at the end showed decreasing loss at first and at some point it blew up again. Adding Glorot init to first conv layer as well finally made the net work. Adding droupouts helped avoid overfitting and better perform. The 6-layer model achieved 87-90% accuracy and precision.
+Applying Glorot init to Dense layer at the end showed decreasing loss at first and at some point it blew up again. Adding Glorot init to the first convolutional layer as well finally made the net work. Adding droupouts helped avoid overfitting and better perform. The 6-layer model achieved 87-90% accuracy and precision.
 
+|class|precision |   recall | f1-score |  support|
+|-----------|---------|----------|----------|
+|0  |     0.85  |    0.88    |  0.86   |    192|
+|1  |     0.83  |    0.94   |   0.89   |    196|
+|2  |     0.99  |    0.84   |   0.91    |   212|
+|avg / total  |     0.90   |   0.89   |   0.89  |     600|
+<sub><b>Table 1: </b> A sample result from 6-layer model on a balanced data. Cross-validated with 20% validation set.  </sub>     
+
+Just for fun, I visualized the output from intermediate layers such as convolutional layers and dropout layers to see if there is an interesting pattern to my eyes. Since it was a features extracted from sound data, the visual representation didn't mean much to human eyes, but I was able to see the net catches some wrinkle-like features from the images.
+<img alt="models" src="images/layers2.gif" width=800>  
+<sub><b>Figure 5: </b> Intermediate layers representation. Order: Conv1, Conv2, Dropout1, Conv3, Conv4, Droupout2, Conv5, Conv6, Droupout 3.</sub>   
+
+## Summary
+In this project, I extracted image features from animal sound data using Mel-frequency cepstral coefficients (MFCCs) and classified the animal sounds using convolutional neural networks. I tested three simple models with one, two and six convolutional layers and explored the effect of different factors on the model stability (convergence of the loss function) and the model performance (accuracy and precision). As a result, it turned out that image pre-processing and scaling, learning rate, and initialization of the CNN are crucial for the model to work (loss function convergence) and to avoid overfitting. Learning rate, SGD decay rate, regularization (dropouts), batch number and number of epoch are important to avoid overfitting. With all of above plus other hyperparameters such as number of filters and filter size, and overall model structure also played an important role in model performance.
+
+There are many possible future work that can be built on top of this project. I can try improving the model by exploring other featurization method such as mel-frequency spectrum's log-energy values without discrete cosine transform to see if the localized features really helps. I could add more animals (perhaps birds because of their abundance of sound data). Or I could try other types of models such as recurrent neural networks (RNN).
 
 
 ## References
