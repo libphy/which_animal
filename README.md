@@ -48,7 +48,7 @@ For the next model, I used three repeated units of conv-conv-maxpool which has t
 Applying Glorot init to Dense layer at the end showed decreasing loss at first and at some point it blew up again. Adding Glorot init to the first convolutional layer as well finally made the net work. Adding droupouts helped avoid overfitting and better perform. The 6-layer model achieved 87-90% accuracy and precision.
 
 |class|precision |   recall | f1-score |  support|
-|-----------|---------|----------|----------|
+|-----------|---------|----------|----------|------|
 |0  |     0.85  |    0.88    |  0.86   |    192|
 |1  |     0.83  |    0.94   |   0.89   |    196|
 |2  |     0.99  |    0.84   |   0.91    |   212|
